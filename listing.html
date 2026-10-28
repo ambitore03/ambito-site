@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listing | Ámbito Real Estate</title>
+<link rel="icon" href="assets/logomark-amber.jpg">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .l-hero{background:var(--navy-950);padding:150px 0 40px;}
+  .l-status{display:inline-block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;background:var(--amber-500);color:var(--navy-950);padding:6px 14px;margin-bottom:16px;}
+  .l-price{font-family:var(--display);color:var(--white);font-size:clamp(30px,4vw,46px);}
+  .l-addr{color:var(--stone-300);margin-top:10px;font-size:16px;}
+  .l-mlsid{font-family:var(--mono);font-size:12px;color:var(--stone-600);margin-top:10px;}
+
+  .l-gallery{padding:32px 0 0;}
+  .l-main-photo{aspect-ratio:16/9;background:var(--cream-100) center/cover;margin-bottom:12px;}
+  .l-main-photo img{width:100%;height:100%;object-fit:cover;}
+  .l-thumbs{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;}
+  .l-thumbs img{width:110px;height:78px;object-fit:cover;cursor:pointer;opacity:0.6;flex-shrink:0;border:2px solid transparent;}
+  .l-thumbs img:hover{opacity:1;}
+  .l-thumbs img.active{opacity:1;border-color:var(--amber-500);}
+
+  .l-stats-bar{display:flex;gap:36px;padding:26px 0;border-bottom:1px solid var(--cream-100);flex-wrap:wrap;}
+  .l-stats-bar div strong{display:block;font-family:var(--display);font-size:22px;}
+  .l-stats-bar div span{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--stone-600);}
+
+  .l-body-grid{display:grid;grid-template-columns:1fr 340px;gap:56px;align-items:flex-start;padding:44px 0;}
+  .l-section{margin-bottom:48px;}
+  .l-section h2{font-family:var(--display);font-size:22px;margin-bottom:18px;}
+  .l-desc p{font-size:15px;line-height:1.8;color:var(--ink-900);white-space:pre-line;}
+
+  .l-details-table{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--cream-100);}
+  .l-detail-row{padding:13px 0;border-bottom:1px solid var(--cream-100);}
+  .l-detail-row .k{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--stone-600);}
+  .l-detail-row .v{font-size:14px;margin-top:3px;color:var(--ink-900);font-weight:600;}
+
+  .l-tags{display:flex;flex-wrap:wrap;gap:10px;}
+  .l-tags span{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;background:var(--cream-100);padding:8px 14px;color:var(--stone-600);}
+
+  .l-map-frame{padding:4px;background:var(--navy-950);}
+  .l-map-frame iframe, #l-map-canvas{width:100%;height:420px;display:block;border:0;}
+  .l-poi-bar{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 20px;}
+  .l-poi-btn{
+    display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.04em;
+    padding:10px 14px;border:1.5px solid var(--cream-100);background:var(--white);cursor:pointer;color:var(--stone-600);
+  }
+  .l-poi-btn.active{border-color:var(--amber-500);color:var(--navy-950);background:var(--cream-100);}
+  .l-poi-btn .dot{width:8px;height:8px;border-radius:50%;}
+  .l-map-note{background:var(--cream-100);padding:16px 18px;font-size:13px;color:var(--stone-600);line-height:1.6;margin-top:14px;}
+  .l-map-note code{background:var(--white);padding:2px 6px;font-family:var(--mono);font-size:12px;}
+
+  .l-sidebar{background:var(--cream-100);padding:26px;position:sticky;top:110px;}
+  .l-sidebar h3{font-family:var(--heading);font-size:16px;}
+  .l-sidebar .agent-name{font-family:var(--display);font-size:19px;margin-top:14px;}
+  .l-sidebar .agent-office{font-size:13px;color:var(--stone-600);margin-top:4px;}
+  .l-sidebar .btn{width:100%;justify-content:center;margin-top:10px;}
+  .l-mls-note{font-size:11px;color:var(--stone-600);margin-top:18px;padding-top:16px;border-top:1px solid var(--cream-50);line-height:1.6;}
+
+  @media(max-width:900px){
+    .l-body-grid{grid-template-columns:1fr;}
+    .l-details-table{grid-template-columns:1fr;}
+    .l-sidebar{position:static;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header solid">
+  <div class="container nav-row">
+    <a href="index.html" class="logo-link"><img src="assets/wordmark-dark-bg.svg" alt="Ámbito Real Estate"></a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="listings.html">Listings</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <button class="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<section class="l-hero">
+  <div class="container">
+    <div class="l-status" id="l-status">For Sale</div>
+    <div class="l-price" id="l-price">—</div>
+    <div class="l-addr" id="l-addr">—</div>
+    <div class="l-mlsid" id="l-mlsid"></div>
+  </div>
+</section>
+
+<section class="l-gallery">
+  <div class="container">
+    <div class="l-main-photo"><img id="l-main-img" src="" alt="Property photo"></div>
+    <div class="l-thumbs" id="l-thumbs"></div>
+  </div>
+</section>
+
+<section style="padding-top:0;">
+  <div class="container">
+    <div class="l-stats-bar">
+      <div><strong id="l-beds">—</strong><span>Bedrooms</span></div>
+      <div><strong id="l-baths">—</strong><span>Bathrooms</span></div>
+      <div><strong id="l-sqft">—</strong><span>Interior Size</span></div>
+      <div><strong id="l-type">—</strong><span>Property Type</span></div>
+    </div>
+
+    <div class="l-body-grid">
+      <div>
+        <div class="l-section l-desc">
+          <h2>Description</h2>
+          <p id="l-description">—</p>
+        </div>
+
+        <div class="l-section">
+          <h2>Details</h2>
+          <div class="l-details-table" id="l-details-table"></div>
+        </div>
+
+        <div class="l-section">
+          <h2>Amenities &amp; Features</h2>
+          <div class="l-tags" id="l-tags"></div>
+        </div>
+
+        <div class="l-section">
+          <h2>Map &amp; Nearby</h2>
+          <div class="l-poi-bar" id="l-poi-bar"></div>
+          <div class="l-map-frame"><iframe id="l-map-embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+          <div class="l-map-note" id="l-map-note"></div>
+        </div>
+      </div>
+
+      <div class="l-sidebar">
+        <h3>Listed By</h3>
+        <div class="agent-name" id="l-agent-name">Ámbito Real Estate</div>
+        <div class="agent-office" id="l-agent-office"></div>
+        <a href="contact.html" class="btn btn-primary">Schedule a Showing</a>
+        <a href="listings.html" class="btn btn-ghost" style="color:var(--stone-600);border-color:var(--cream-100);">Back to Listings</a>
+        <div class="l-mls-note" id="l-mls-note"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <img src="assets/wordmark-dark-bg.svg" alt="Ámbito Real Estate" class="footer-logo">
+        <p>Licensed real estate services in Puerto Rico. Member, San Juan Board of Realtors.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul><li><a href="listings.html">Listings</a></li><li><a href="about.html">About</a></li></ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@ambitore.com">hello@ambitore.com</a></li>
+          <li><a href="tel:+17872153322">(787) 215-3322</a></li>
+          <li>Puerto Rico</li>
+        </ul>
+      </div>
+      <div><h4>Client Access</h4><ul><li><a href="contact.html">Request a Private Link</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Ámbito Real Estate. All rights reserved.</span>
+      <span>Licensed Real Estate Broker/Agent, Puerto Rico.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase.js"></script>
+<script src="assets/main.js"></script>
+<script>
+/* ============================================================
+   Add your Google Maps API key below to enable the interactive
+   points-of-interest map (restaurants, supermarkets, schools,
+   pharmacies, hospitals, transit). Get a key from the Google
+   Cloud Console with "Maps JavaScript API" and "Places API"
+   enabled. Until a key is added, a simpler embedded map is
+   shown instead — the page works fully either way.
+   ============================================================ */
+const GOOGLE_MAPS_API_KEY = "";
+
+const params = new URLSearchParams(window.location.search);
+const listingId = params.get('id');
+
+const POI_CATEGORIES = [
+  {key:'transit_station', label:'Transport', color:'#378ADD'},
+  {key:'supermarket', label:'Supermarkets', color:'#1D9E75'},
+  {key:'school', label:'Schools', color:'#7F77DD'},
+  {key:'restaurant', label:'Restaurants', color:'#D85A30'},
+  {key:'pharmacy', label:'Pharmacies', color:'#D4537E'},
+  {key:'hospital', label:'Hospitals', color:'#E24B4A'}
+];
+
+function escapeHtml(str){
+  return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+async function loadListing(){
+  let listing = null;
+  if(listingId){
+    const { data } = await sb.from('listings').select('*').eq('id', listingId).maybeSingle();
+    listing = data;
+  }
+  if(!listing){
+    document.querySelector('.l-hero .container').innerHTML = '<p style="color:var(--white);">This listing could not be found. <a href="listings.html" style="color:var(--amber-500);">Back to listings</a></p>';
+    return;
+  }
+  renderListing(listing);
+}
+
+function renderListing(l){
+  document.title = (l.address || 'Listing') + ' | Ámbito Real Estate';
+  document.getElementById('l-status').textContent = l.tag || 'For Sale';
+  document.getElementById('l-price').textContent = l.price || '—';
+  document.getElementById('l-addr').textContent = [l.address, l.area, l.city].filter(Boolean).join(', ');
+  document.getElementById('l-mlsid').textContent = l.mlsid ? 'MLS # ' + l.mlsid : '';
+
+  document.getElementById('l-beds').textContent = l.beds || '—';
+  const baths = (l.bathsfull || '0') + (l.bathshalf ? '.5' : '');
+  document.getElementById('l-baths').textContent = l.bathsfull ? baths : '—';
+  document.getElementById('l-sqft').textContent = l.sqft || '—';
+  document.getElementById('l-type').textContent = l.type || '—';
+
+  document.getElementById('l-description').textContent = l.description || 'No description added yet.';
+
+  const images = (l.images || '').split('\n').map(s => s.trim()).filter(Boolean);
+  const mainImg = document.getElementById('l-main-img');
+  const thumbs = document.getElementById('l-thumbs');
+  if(images.length){
+    mainImg.src = images[0];
+    thumbs.innerHTML = images.map((src,i) => `<img src="${escapeHtml(src)}" class="${i===0?'active':''}" onclick="swapMain(this,'${escapeHtml(src)}')">`).join('');
+  }
+
+  const details = [
+    ['Property ID', l.mlsid], ['Price', l.price], ['Property Type', l.type],
+    ['Interior Size', l.sqft], ['Lot Size', l.lotsize], ['Total Rooms', l.rooms],
+    ['Bedrooms', l.beds], ['Bathrooms Full', l.bathsfull], ['Bathrooms Half', l.bathshalf],
+    ['Garage Spaces', l.garage], ['Levels', l.levels], ['Year Built', l.yearbuilt],
+    ['Property Condition', l.condition], ['View', l.view], ['Pets Allowed', l.pets],
+    ['HOA Fee', l.hoafee], ['HOA Frequency', l.hoafreq], ['Postal Code', l.zip],
+    ['City', l.city], ['Area', l.area]
+  ].filter(([k,v]) => v);
+  document.getElementById('l-details-table').innerHTML = details.map(([k,v]) =>
+    `<div class="l-detail-row"><div class="k">${escapeHtml(k)}</div><div class="v">${escapeHtml(v)}</div></div>`
+  ).join('');
+
+  const tags = [...(l.amenities||'').split(','), ...(l.features||'').split(',')].map(s => s.trim()).filter(Boolean);
+  document.getElementById('l-tags').innerHTML = tags.length ? tags.map(t => `<span>${escapeHtml(t)}</span>`).join('') : '<span>No amenities added yet</span>';
+
+  document.getElementById('l-agent-name').textContent = l.agentname || 'Ámbito Real Estate';
+  document.getElementById('l-agent-office').textContent = l.agentoffice || '';
+  document.getElementById('l-mls-note').textContent = 'Listing courtesy of ' + (l.agentoffice || 'Ámbito Real Estate') + (l.agentname ? ', ' + l.agentname : '') + '. Data provided as-is; please report any inaccuracies.';
+
+  setupMap(l.map || document.getElementById('l-addr').textContent);
+}
+
+function swapMain(el, src){
+  document.getElementById('l-main-img').src = src;
+  document.querySelectorAll('.l-thumbs img').forEach(img => img.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setupMap(query){
+  document.getElementById('l-map-embed').src = 'https://www.google.com/maps?q=' + encodeURIComponent(query) + '&output=embed';
+
+  const poiBar = document.getElementById('l-poi-bar');
+  const note = document.getElementById('l-map-note');
+
+  if(!GOOGLE_MAPS_API_KEY){
+    poiBar.innerHTML = POI_CATEGORIES.map(c => `<button class="l-poi-btn" disabled><span class="dot" style="background:${c.color}"></span>${c.label}</button>`).join('');
+    note.innerHTML = 'Click-to-explore nearby restaurants, supermarkets, schools, pharmacies and hospitals needs a Google Maps API key with the <strong>Maps JavaScript API</strong> and <strong>Places API</strong> enabled. Add it at the top of <code>listing.html</code> as <code>GOOGLE_MAPS_API_KEY</code> to activate the buttons above.';
+    return;
+  }
+
+  note.textContent = '';
+  poiBar.innerHTML = POI_CATEGORIES.map(c => `<button class="l-poi-btn" id="poi-${c.key}" onclick="togglePoi('${c.key}')"><span class="dot" style="background:${c.color}"></span>${c.label}</button>`).join('');
+
+  const script = document.createElement('script');
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initInteractiveMap`;
+  window.__mapQuery = query;
+  document.head.appendChild(script);
+}
+
+let gMap, gGeocoder, gPlaces, gPropertyMarker;
+const gCategoryMarkers = {};
+const gActiveCategories = new Set();
+
+function initInteractiveMap(){
+  document.getElementById('l-map-frame') && null;
+  const mapEl = document.createElement('div');
+  mapEl.id = 'l-map-canvas';
+  document.querySelector('.l-map-frame').replaceChildren(mapEl);
+
+  gGeocoder = new google.maps.Geocoder();
+  gGeocoder.geocode({address: window.__mapQuery}, (results, status) => {
+    const center = (status === 'OK' && results[0]) ? results[0].geometry.location : {lat:18.4655, lng:-66.1057};
+    gMap = new google.maps.Map(mapEl, {center, zoom:15, disableDefaultUI:true, zoomControl:true});
+    gPropertyMarker = new google.maps.Marker({
+      position:center, map:gMap, title:'This property',
+      icon:{path:google.maps.SymbolPath.CIRCLE, scale:9, fillColor:'#F5A623', fillOpacity:1, strokeColor:'#12151C', strokeWeight:2}
+    });
+    gPlaces = new google.maps.places.PlacesService(gMap);
+  });
+}
+
+function togglePoi(key){
+  const btn = document.getElementById('poi-' + key);
+  if(gActiveCategories.has(key)){
+    gActiveCategories.delete(key);
+    btn.classList.remove('active');
+    (gCategoryMarkers[key] || []).forEach(m => m.setMap(null));
+    gCategoryMarkers[key] = [];
+    return;
+  }
+  gActiveCategories.add(key);
+  btn.classList.add('active');
+  const cat = POI_CATEGORIES.find(c => c.key === key);
+
+  if(!gPlaces || !gPropertyMarker){ return; }
+
+  gPlaces.nearbySearch({
+    location: gPropertyMarker.getPosition(),
+    radius: 3000,
+    type: key
+  }, (results, status) => {
+    if(status !== google.maps.places.PlacesServiceStatus.OK || !results) return;
+    gCategoryMarkers[key] = results.slice(0,12).map(place => {
+      const marker = new google.maps.Marker({
+        position: place.geometry.location, map: gMap, title: place.name,
+        icon:{path:google.maps.SymbolPath.CIRCLE, scale:6, fillColor:cat.color, fillOpacity:1, strokeColor:'#FFFFFF', strokeWeight:1.5}
+      });
+      const info = new google.maps.InfoWindow({content: `<strong>${escapeHtml(place.name)}</strong><br>${escapeHtml(place.vicinity||'')}`});
+      marker.addListener('click', () => info.open(gMap, marker));
+      return marker;
+    });
+  });
+}
+
+loadListing();
+</script>
+</body>
+</html>

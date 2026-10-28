@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ámbito Real Estate | Puerto Rico</title>
+<meta name="description" content="Ámbito Real Estate — curated properties and private buyer and seller representation across Puerto Rico.">
+<link rel="icon" href="assets/logomark-amber.jpg">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;align-items:center;
+    padding-top:120px;
+    overflow:hidden;
+  }
+  .hero-media{position:absolute;inset:0;z-index:0;}
+  .hero-media video, .hero-media img.hero-fallback{
+    width:100%;height:100%;object-fit:cover;object-position:center;
+  }
+  .hero-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(100deg, rgba(15,18,24,0.88) 0%, rgba(15,18,24,0.6) 45%, rgba(15,18,24,0.35) 100%);
+  }
+  .hero-content{position:relative;z-index:2;max-width:620px;}
+  .hero-eyebrow{color:var(--amber-500);font-family:var(--mono);font-size:13px;letter-spacing:0.16em;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .hero-eyebrow::before{content:'';width:22px;height:2px;background:var(--amber-500);}
+  .hero h1{font-family:var(--heading);font-weight:700;color:var(--white);font-size:clamp(30px,3.6vw,46px);line-height:1.18;letter-spacing:-0.005em;}
+  .hero h1 span{color:var(--amber-500);}
+  .hero p.lead{color:var(--stone-300);font-size:17px;margin-top:22px;max-width:480px;line-height:1.7;}
+  .hero-ctas{display:flex;gap:16px;margin-top:36px;flex-wrap:wrap;}
+  .hero-stats{display:flex;gap:40px;margin-top:56px;flex-wrap:wrap;}
+  .hero-stats div strong{display:block;font-family:var(--display);font-size:24px;color:var(--white);}
+  .hero-stats div span{font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--stone-300);}
+  .hero-credit{
+    position:absolute;bottom:18px;right:24px;z-index:2;
+    font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.45);
+    letter-spacing:0.03em;
+  }
+  .hero-credit a{color:rgba(255,255,255,0.6);}
+
+  /* Listings preview */
+  .listing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+  .listing-card{background:var(--white);}
+  .listing-photo{aspect-ratio:4/3;background:linear-gradient(150deg,#dcd7cb,#c9c2b2) center/cover;position:relative;}
+  .listing-photo img{width:100%;height:100%;object-fit:cover;}
+  .listing-tag{
+    position:absolute;top:16px;left:0;
+    background:var(--navy-950);color:var(--amber-500);
+    font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+    padding:7px 14px;
+  }
+  .listing-body{padding:22px 4px;}
+  .listing-price{font-family:var(--display);font-size:22px;color:var(--ink-900);}
+  .listing-addr{margin-top:8px;font-size:14px;color:var(--stone-600);}
+  .listing-meta{margin-top:14px;display:flex;gap:16px;font-family:var(--mono);font-size:12px;color:var(--stone-600);}
+
+  /* About teaser */
+  .about-teaser{display:grid;grid-template-columns:0.8fr 1.2fr;gap:64px;align-items:center;}
+  .about-photo{aspect-ratio:3/4;background:linear-gradient(160deg,#2a3346,#171b24);}
+  .about-photo img{width:100%;height:100%;object-fit:cover;}
+
+  /* Neighborhoods preview */
+  .hood-row{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;}
+  .hood-card{
+    aspect-ratio:3/4;position:relative;
+    background:linear-gradient(180deg, rgba(15,18,24,0) 40%, rgba(15,18,24,0.9) 100%), linear-gradient(150deg,#3a4356,#1b212e);
+    display:flex;align-items:flex-end;padding:18px;
+  }
+  .hood-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;}
+  .hood-card span{font-family:var(--heading);font-weight:700;color:var(--white);font-size:15px;}
+
+  /* Testimonials */
+  .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+  .testi-card{background:var(--navy-800);padding:32px 28px;color:var(--stone-300);}
+  .testi-mark{font-family:var(--display);color:var(--amber-500);font-size:38px;line-height:1;}
+  .testi-quote{margin-top:14px;font-size:15px;line-height:1.7;}
+  .testi-name{margin-top:22px;font-family:var(--heading);font-weight:700;color:var(--white);font-size:14px;}
+  .testi-role{font-family:var(--mono);font-size:11px;color:var(--stone-600);margin-top:2px;}
+
+  .cta-band{background:var(--navy-950);text-align:center;}
+  .cta-band h2{font-family:var(--display);color:var(--white);font-size:clamp(30px,4vw,46px);max-width:700px;margin:0 auto;line-height:1.15;}
+  .cta-band p{color:var(--stone-300);margin-top:18px;}
+  .cta-band .btn-primary{margin-top:36px;}
+
+  @media(max-width:960px){
+    .hero-grid,.about-teaser{grid-template-columns:1fr;}
+    .hero-visual{order:-1;max-width:340px;margin:0 auto;}
+    .listing-grid,.testi-grid{grid-template-columns:1fr;}
+    .hood-row{grid-template-columns:repeat(3,1fr);}
+  }
+  @media(max-width:560px){.hood-row{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container nav-row">
+    <a href="index.html" class="logo-link"><img src="assets/wordmark-dark-bg.svg" alt="Ámbito Real Estate"></a>
+    <nav class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="listings.html">Listings</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="social-icons">
+      <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.3h-3.1V7.6c0-.9.3-1.6 1.7-1.6h1.6V3.1C16.5 3 15.4 3 14.2 3c-2.6 0-4.4 1.6-4.4 4.5v2.2H7v3.3h2.8V21h3.7z"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg></a>
+      <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.3 2 1.7 3.6 3.5 4v2.7c-1.4 0-2.7-.4-3.8-1.2v6.6c0 3.3-2.7 5.9-6 5.9s-6-2.6-6-5.9 2.7-5.9 6-5.9c.4 0 .8 0 1.2.1v2.8a3.2 3.2 0 0 0-1.2-.2c-1.8 0-3.2 1.4-3.2 3.2s1.4 3.2 3.2 3.2 3.2-1.4 3.2-3.2V3h3.1z"/></svg></a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-media">
+    <img class="hero-fallback" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/El_Morro_Castle%2C_San_Juan%2C_Puerto_Rico.jpg/1600px-El_Morro_Castle%2C_San_Juan%2C_Puerto_Rico.jpg" alt="El Morro, Old San Juan">
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="container">
+    <div class="hero-content">
+      <h1>Every Detail. Every Decision. <span>Precisely Managed.</span></h1>
+      <div class="hero-ctas">
+        <a href="listings.html" class="btn btn-primary">View Listings</a>
+        <a href="contact.html" class="btn btn-ghost">Start a Private Search</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero-credit">El Morro, Old San Juan — placeholder photo, swap for your video anytime</div>
+</section>
+<!-- To switch this hero to a video later: replace the <img class="hero-fallback"> above with
+     <video autoplay muted loop playsinline poster="[same image url]"><source src="assets/hero-video.mp4" type="video/mp4"></video> -->
+
+
+<section>
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Curated Portfolio</div>
+      <h2>Signature listings</h2>
+      <p>A hand-selected view of properties I represent — every listing here is one I know personally, inside and out.</p>
+    </div>
+    <div class="listing-grid" id="home-listing-grid"><p style="font-family:var(--mono);font-size:13px;color:var(--stone-600);">Loading listings…</p></div>
+  </div>
+</section>
+
+<section style="background:var(--cream-100)">
+  <div class="container about-teaser">
+    <div class="about-photo cut-bl reveal"><img src="https://picsum.photos/seed/agentportrait/700/900" alt="Agent portrait placeholder"></div>
+    <div class="reveal">
+      <div class="eyebrow">About Ámbito</div>
+      <h2 style="font-family:var(--display);font-size:clamp(28px,3.6vw,42px);margin-top:14px;line-height:1.15;">A local perspective, a private process.</h2>
+      <p style="margin-top:20px;font-size:16px;max-width:520px;">Ambito was built around one idea: Real Estate made simple. Our commitment is to provide thoughtful guidance, transparent advice, and a seamless experience from our first conversation through closing. Whether you're buying, selling, leasing or investing, you'll receive personalized recommendations tailored to your goals, not generic solutions. We value relationships, position strategically on the market and work around your best interest.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Client Experiences</div>
+      <h2>What clients say</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-mark">&ldquo;</div>
+        <p class="testi-quote">I never once felt like I was scrolling a listings site. Every property I saw actually fit what we asked for.</p>
+        <div class="testi-name">M. Rivera</div>
+        <div class="testi-role">Buyer, Condado</div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-mark">&ldquo;</div>
+        <p class="testi-quote">Sold our place in Old San Juan faster than we expected, with clear guidance at every step.</p>
+        <div class="testi-name">J. Santos</div>
+        <div class="testi-role">Seller, Old San Juan</div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-mark">&ldquo;</div>
+        <p class="testi-quote">Relocating from the mainland felt overwhelming until we started working together. Genuinely local knowledge.</p>
+        <div class="testi-name">A. Kessler</div>
+        <div class="testi-role">Buyer, Dorado</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="container">
+    <h2>Ready to find or sell your place in Puerto Rico?</h2>
+    <a href="contact.html" class="btn btn-primary" style="margin-top:36px;">Get In Touch</a>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <img src="assets/wordmark-dark-bg.svg" alt="Ámbito Real Estate" class="footer-logo">
+        <p>Licensed real estate services in Puerto Rico. Member, San Juan Board of Realtors.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-8h2.7l.4-3.3h-3.1V7.6c0-.9.3-1.6 1.7-1.6h1.6V3.1C16.5 3 15.4 3 14.2 3c-2.6 0-4.4 1.6-4.4 4.5v2.2H7v3.3h2.8V21h3.7z"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg></a>
+          <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.3 2 1.7 3.6 3.5 4v2.7c-1.4 0-2.7-.4-3.8-1.2v6.6c0 3.3-2.7 5.9-6 5.9s-6-2.6-6-5.9 2.7-5.9 6-5.9c.4 0 .8 0 1.2.1v2.8a3.2 3.2 0 0 0-1.2-.2c-1.8 0-3.2 1.4-3.2 3.2s1.4 3.2 3.2 3.2 3.2-1.4 3.2-3.2V3h3.1z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="listings.html">Listings</a></li>
+          <li><a href="about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@ambitore.com">hello@ambitore.com</a></li>
+          <li><a href="tel:+17872153322">(787) 215-3322</a></li>
+          <li>Puerto Rico</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Client Access</h4>
+        <ul>
+          <li><a href="contact.html">Request a Private Link</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Ámbito Real Estate. All rights reserved.</span>
+      <span>Licensed Real Estate Broker/Agent, Puerto Rico.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase.js"></script>
+<script src="assets/main.js"></script>
+<script>
+function esc(str){return String(str||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function firstImg(i){const f=(i||'').split('\n').map(x=>x.trim()).filter(Boolean)[0];return f||'https://picsum.photos/seed/placeholder/700/560';}
+(async function(){
+  const grid=document.getElementById('home-listing-grid');
+  const {data,error}=await sb.from('listings').select('*').eq('published',true).order('created_at',{ascending:false}).limit(3);
+  if(error||!data||!data.length){grid.innerHTML='<p style="font-family:var(--mono);font-size:13px;color:var(--stone-600);">New listings coming soon.</p>';return;}
+  grid.innerHTML=data.map(l=>`
+    <a href="listing.html?id=${l.id}" class="listing-card" style="text-decoration:none;color:inherit;display:block;">
+      <div class="listing-photo cut-tr"><span class="listing-tag">${esc(l.tag||'For Sale')}</span><img src="${esc(firstImg(l.images))}" alt="${esc(l.address)}"></div>
+      <div class="listing-body">
+        <div class="listing-price">${esc(l.price)}</div>
+        <div class="listing-addr">${esc(l.area||l.city||l.address)}</div>
+        <div class="listing-meta"><span>${esc(l.beds||'—')} BD</span><span>${esc(l.bathsfull||'—')}${l.bathshalf?'.5':''} BA</span><span>${esc(l.sqft||'—')}</span></div>
+      </div>
+    </a>`).join('');
+})();
+</script>
+</body>
+</html>

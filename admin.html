@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin | Ámbito Real Estate</title>
+<link rel="icon" href="assets/logomark-amber.jpg">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  body{background:var(--cream-50);}
+
+  #gate{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--navy-950);}
+  .gate-card{width:min(360px,88vw);text-align:center;}
+  .gate-card img{height:36px;margin:0 auto 36px;}
+  .gate-card p.hint{margin-top:18px;font-family:var(--mono);font-size:12px;color:var(--stone-600);}
+  #pin-input{
+    width:100%;text-align:center;letter-spacing:0.5em;font-family:var(--mono);font-size:22px;
+    padding:16px;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);
+    color:var(--white);margin-bottom:18px;
+  }
+  .gate-input{width:100%;padding:14px 16px;border:1.5px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);color:var(--white);margin-bottom:12px;font-size:15px;}
+  .gate-input:focus{outline:none;border-color:var(--amber-500);}
+  #pin-error{color:#e6785a;font-size:13px;font-family:var(--mono);margin-top:14px;min-height:18px;}
+
+  #admin{display:none;min-height:100vh;}
+  .admin-bar{background:var(--navy-950);padding:20px 0;position:sticky;top:0;z-index:10;}
+  .admin-bar .container{display:flex;align-items:center;justify-content:space-between;}
+  .admin-bar img{height:26px;}
+  .admin-bar .right{display:flex;align-items:center;gap:18px;}
+  .admin-tag{font-family:var(--mono);font-size:11px;color:var(--amber-500);letter-spacing:0.08em;text-transform:uppercase;}
+  #logout-btn{
+    font-family:var(--mono);font-size:12px;color:var(--stone-300);background:none;border:1px solid rgba(255,255,255,0.2);
+    padding:8px 14px;cursor:pointer;
+  }
+  #logout-btn:hover{color:var(--amber-500);border-color:var(--amber-500);}
+
+  .admin-layout{padding:48px 0 90px;}
+  .admin-grid{display:grid;grid-template-columns:420px 1fr;gap:44px;align-items:flex-start;}
+
+  .panel{background:var(--white);padding:28px;border:1px solid var(--cream-100);max-height:calc(100vh - 140px);overflow-y:auto;position:sticky;top:100px;}
+  .panel h3{font-family:var(--heading);font-size:18px;margin-bottom:4px;}
+  .panel .sub{font-size:13px;color:var(--stone-600);margin-bottom:22px;}
+
+  .form-section-label{
+    font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.08em;
+    color:var(--amber-500);margin:26px 0 14px;padding-top:20px;border-top:1px solid var(--cream-100);
+    display:flex;align-items:center;gap:8px;
+  }
+  .form-section-label:first-of-type{margin-top:0;padding-top:0;border-top:none;}
+
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--stone-600);margin-bottom:6px;}
+  .field input, .field select, .field textarea{
+    width:100%;padding:11px 13px;font-family:var(--body);font-size:14px;
+    border:1.5px solid var(--cream-100);background:var(--cream-50);color:var(--ink-900);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{outline:2px solid var(--amber-500);outline-offset:1px;border-color:var(--amber-500);}
+  .field textarea{resize:vertical;font-family:var(--body);line-height:1.5;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  .field-hint{font-size:11px;color:var(--stone-600);margin-top:5px;}
+
+  #form-error{color:#b5462f;font-size:13px;margin-bottom:12px;display:none;}
+  #save-btn{width:100%;justify-content:center;margin-top:16px;}
+  #cancel-edit{width:100%;justify-content:center;margin-top:10px;display:none;}
+
+  .listings-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px;}
+  .listings-head h3{font-family:var(--heading);font-size:18px;}
+  .listings-head span{font-family:var(--mono);font-size:12px;color:var(--stone-600);}
+
+  .admin-listing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
+  .a-card{background:var(--white);border:1px solid var(--cream-100);}
+  .a-photo{aspect-ratio:4/3;background:var(--cream-100) center/cover;position:relative;}
+  .a-photo img{width:100%;height:100%;object-fit:cover;}
+  .a-tag{position:absolute;top:14px;left:0;background:var(--navy-950);color:var(--amber-500);font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:6px 12px;}
+  .a-body{padding:16px;}
+  .a-price{font-family:var(--display);font-size:18px;}
+  .a-addr{font-size:13px;color:var(--stone-600);margin-top:6px;}
+  .a-meta{margin-top:10px;display:flex;gap:12px;font-family:var(--mono);font-size:11px;color:var(--stone-600);}
+  .a-actions{display:flex;gap:8px;margin-top:14px;}
+  .a-actions button{
+    flex:1;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.05em;
+    padding:9px;border:1px solid var(--cream-100);background:var(--cream-50);cursor:pointer;color:var(--stone-600);
+  }
+  .a-actions button:hover{border-color:var(--navy-950);color:var(--navy-950);}
+  .a-actions button.del:hover{border-color:#b5462f;color:#b5462f;}
+  .a-actions button.view{background:var(--navy-950);color:var(--amber-500);border-color:var(--navy-950);}
+
+  .empty-state{padding:60px 24px;text-align:center;border:1.5px dashed var(--cream-100);}
+  .empty-state p{max-width:340px;margin:10px auto 0;}
+
+  .note-box{background:var(--cream-100);padding:18px 20px;font-size:13px;color:var(--stone-600);margin-bottom:24px;line-height:1.6;}
+  .note-box strong{color:var(--ink-900);}
+
+  @media(max-width:900px){
+    .admin-grid{grid-template-columns:1fr;}
+    .panel{position:static;max-height:none;}
+    .admin-listing-grid{grid-template-columns:1fr;}
+    .field-row, .field-row-3{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-card">
+    <img src="assets/wordmark-dark-bg.svg" alt="Ámbito Real Estate">
+    <div class="eyebrow" style="justify-content:center;">Private Admin</div>
+    <h2 style="color:var(--white);font-family:var(--display);font-size:24px;margin-top:14px;">Sign in</h2>
+    <div style="margin-top:26px;">
+      <input type="email" id="login-email" class="gate-input" placeholder="Email" autocomplete="username">
+      <input type="password" id="login-password" class="gate-input" placeholder="Password" autocomplete="current-password">
+      <button class="btn btn-primary" id="unlock-btn" style="width:100%;justify-content:center;">Sign In</button>
+      <div id="pin-error"></div>
+    </div>
+  </div>
+</div>
+
+<div id="admin">
+  <div class="admin-bar">
+    <div class="container">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <img src="assets/wordmark-dark-bg.svg" alt="Ámbito Real Estate">
+        <span class="admin-tag">Listings Admin</span>
+      </div>
+      <div class="right">
+        <button id="logout-btn">Log Out</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+    <div class="container">
+
+      <div class="note-box">
+        <strong>Live admin:</strong> listings you save here appear on your public Home and Listings pages right away. Upload photos directly with the button in the Photos section — the first photo is the cover.
+      </div>
+
+      <div class="admin-grid">
+        <div class="panel">
+          <h3 id="form-title">Add a Listing</h3>
+          <p class="sub">Fill in what you have — only price and address are required.</p>
+          <div id="form-error"></div>
+
+          <div class="form-section-label">Basics</div>
+          <div class="field">
+            <label for="f-price">Price</label>
+            <input type="text" id="f-price" placeholder="$895,000">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-tag">Status</label>
+              <select id="f-tag">
+                <option>For Sale</option>
+                <option>New Listing</option>
+                <option>Pending</option>
+                <option>Sold</option>
+                <option>For Rent</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-type">Property Type</label>
+              <select id="f-type">
+                <option>Condominium</option>
+                <option>Single Family Residence</option>
+                <option>Villa</option>
+                <option>Townhouse</option>
+                <option>Lot &amp; Land</option>
+                <option>Commercial</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-mlsid">MLS / Property ID</label>
+            <input type="text" id="f-mlsid" placeholder="PR9104928">
+          </div>
+
+          <div class="form-section-label">Location</div>
+          <div class="field">
+            <label for="f-address">Street Address</label>
+            <input type="text" id="f-address" placeholder="500 Plantation Drive, Unit PH-3403">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-city">City</label>
+              <input type="text" id="f-city" placeholder="Dorado">
+            </div>
+            <div class="field">
+              <label for="f-area">Area / Community</label>
+              <input type="text" id="f-area" placeholder="Plantation Village">
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-zip">Zip Code</label>
+            <input type="text" id="f-zip" placeholder="00646">
+          </div>
+          <div class="field">
+            <label for="f-map">Map Location (full address for the map)</label>
+            <input type="text" id="f-map" placeholder="500 Plantation Drive, Dorado, PR 00646">
+            <div class="field-hint">This is what the property page uses to place the map pin.</div>
+          </div>
+
+          <div class="form-section-label">Size &amp; Rooms</div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-beds">Bedrooms</label>
+              <input type="text" id="f-beds" placeholder="3">
+            </div>
+            <div class="field">
+              <label for="f-bathsfull">Bathrooms (Full)</label>
+              <input type="text" id="f-bathsfull" placeholder="2">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-bathshalf">Bathrooms (Half)</label>
+              <input type="text" id="f-bathshalf" placeholder="1">
+            </div>
+            <div class="field">
+              <label for="f-rooms">Total Rooms</label>
+              <input type="text" id="f-rooms" placeholder="6">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-sqft">Interior Size</label>
+              <input type="text" id="f-sqft" placeholder="1,850 ft2">
+            </div>
+            <div class="field">
+              <label for="f-lotsize">Lot Size</label>
+              <input type="text" id="f-lotsize" placeholder="5,000 ft2">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-garage">Garage Spaces</label>
+              <input type="text" id="f-garage" placeholder="2">
+            </div>
+            <div class="field">
+              <label for="f-levels">Levels</label>
+              <input type="text" id="f-levels" placeholder="Two">
+            </div>
+          </div>
+
+          <div class="form-section-label">Building Details</div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-yearbuilt">Year Built</label>
+              <input type="text" id="f-yearbuilt" placeholder="2015">
+            </div>
+            <div class="field">
+              <label for="f-condition">Property Condition</label>
+              <input type="text" id="f-condition" placeholder="Completed">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-view">View</label>
+              <input type="text" id="f-view" placeholder="Golf Course">
+            </div>
+            <div class="field">
+              <label for="f-pets">Pets Allowed</label>
+              <select id="f-pets">
+                <option>Yes</option>
+                <option>No</option>
+                <option>Ask</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="f-hoafee">HOA Fee</label>
+              <input type="text" id="f-hoafee" placeholder="$450">
+            </div>
+            <div class="field">
+              <label for="f-hoafreq">HOA Frequency</label>
+              <select id="f-hoafreq">
+                <option>Monthly</option>
+                <option>Quarterly</option>
+                <option>Annual</option>
+                <option>None</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-section-label">Amenities &amp; Features</div>
+          <div class="field">
+            <label for="f-amenities">Amenities (comma separated)</label>
+            <textarea id="f-amenities" rows="2" placeholder="Pool, Gym, Gated, Golf Course, Security"></textarea>
+          </div>
+          <div class="field">
+            <label for="f-features">Interior Features (comma separated)</label>
+            <textarea id="f-features" rows="2" placeholder="Walk-in Closet, High Ceilings, Ocean View, Balcony"></textarea>
+          </div>
+
+          <div class="form-section-label">Photos &amp; Description</div>
+          <div class="field">
+            <label for="f-upload">Upload photos</label>
+            <input type="file" id="f-upload" accept="image/*" multiple>
+            <div class="field-hint" id="upload-status">Uploaded photos are added to the list below automatically.</div>
+          </div>
+          <div class="field">
+            <label for="f-images">Photo URLs (one per line — first is the cover photo)</label>
+            <textarea id="f-images" rows="3" placeholder="https://example.com/photo1.jpg"></textarea>
+          </div>
+          <div class="field">
+            <label for="f-description">Description</label>
+            <textarea id="f-description" rows="5" placeholder="Describe the property — layout, standout features, what makes it worth seeing."></textarea>
+          </div>
+
+          <div class="form-section-label">Listing Agent (required for MLS attribution)</div>
+          <div class="field">
+            <label for="f-agentname">Listing Agent Name</label>
+            <input type="text" id="f-agentname" placeholder="Full name as required by MLS">
+          </div>
+          <div class="field">
+            <label for="f-agentoffice">Listing Office</label>
+            <input type="text" id="f-agentoffice" placeholder="Brokerage name">
+          </div>
+
+          <button class="btn btn-primary" id="save-btn">Save Listing</button>
+          <button class="btn btn-ghost" id="cancel-edit" style="color:var(--stone-600);border-color:var(--cream-100);">Cancel Edit</button>
+        </div>
+
+        <div>
+          <div class="listings-head">
+            <h3>Your Listings</h3>
+            <span id="count-label">0 listings</span>
+          </div>
+          <div id="listings-container"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/supabase.js"></script>
+<script>
+const gate = document.getElementById('gate');
+const admin = document.getElementById('admin');
+const pinError = document.getElementById('pin-error');
+
+document.getElementById('unlock-btn').addEventListener('click', tryLogin);
+document.getElementById('login-password').addEventListener('keydown', (e) => { if(e.key === 'Enter') tryLogin(); });
+
+async function tryLogin(){
+  pinError.textContent = '';
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if(error){ pinError.textContent = "Email or password doesn't match. Try again."; return; }
+  showAdmin();
+}
+
+function showAdmin(){
+  gate.style.display = 'none';
+  admin.style.display = 'block';
+  loadListings();
+}
+
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  admin.style.display = 'none';
+  gate.style.display = 'flex';
+  document.getElementById('login-password').value = '';
+});
+
+(async function(){
+  const { data } = await sb.auth.getSession();
+  if(data && data.session) showAdmin();
+})();
+
+const FIELD_IDS = [
+  'price','tag','type','mlsid','address','city','area','zip','map',
+  'beds','bathsfull','bathshalf','rooms','sqft','lotsize','garage','levels',
+  'yearbuilt','condition','view','pets','hoafee','hoafreq',
+  'amenities','features','images','description','agentname','agentoffice'
+];
+
+let listings = [];
+let editingId = null;
+
+async function loadListings(){
+  const { data, error } = await sb.from('listings').select('*').order('created_at', {ascending:false});
+  if(error){ showFormError('Could not load listings: ' + error.message); return; }
+  listings = data || [];
+  renderListings();
+}
+
+document.getElementById('f-upload').addEventListener('change', async (e) => {
+  const files = [...e.target.files];
+  const status = document.getElementById('upload-status');
+  const box = document.getElementById('f-images');
+  for(let i = 0; i < files.length; i++){
+    status.textContent = 'Uploading ' + (i+1) + ' of ' + files.length + '…';
+    const f = files[i];
+    const safe = f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const path = Date.now() + '-' + safe;
+    const { error } = await sb.storage.from('listing-photos').upload(path, f);
+    if(error){ status.textContent = 'Upload failed: ' + error.message; return; }
+    const { data } = sb.storage.from('listing-photos').getPublicUrl(path);
+    box.value = (box.value ? box.value.trim() + '\n' : '') + data.publicUrl;
+  }
+  status.textContent = 'Done. Photos added below — save the listing to keep them.';
+  e.target.value = '';
+});
+
+function firstImage(l){
+  const first = (l.images || '').split('\n').map(s => s.trim()).filter(Boolean)[0];
+  return first || '';
+}
+
+function renderListings(){
+  const container = document.getElementById('listings-container');
+  document.getElementById('count-label').textContent = listings.length + (listings.length === 1 ? ' listing' : ' listings');
+
+  if(listings.length === 0){
+    container.innerHTML = '<div class="empty-state"><h3 style="font-family:var(--heading);font-size:16px;">No listings yet</h3><p>Add your first listing using the form on the left — it will appear here right away.</p></div>';
+    return;
+  }
+
+  container.innerHTML = '<div class="admin-listing-grid">' + listings.map(l => `
+    <div class="a-card">
+      <div class="a-photo">
+        <span class="a-tag">${escapeHtml(l.tag)}</span>
+        ${firstImage(l) ? `<img src="${escapeAttr(firstImage(l))}" alt="${escapeAttr(l.address)}">` : ''}
+      </div>
+      <div class="a-body">
+        <div class="a-price">${escapeHtml(l.price)}</div>
+        <div class="a-addr">${escapeHtml(l.address)}${l.area ? ', ' + escapeHtml(l.area) : ''}</div>
+        <div class="a-meta"><span>${escapeHtml(l.beds)} BD</span><span>${escapeHtml(l.bathsfull)}${l.bathshalf ? '.5' : ''} BA</span><span>${escapeHtml(l.sqft)}</span></div>
+        <div class="a-actions">
+          <button class="view" onclick="viewListing('${l.id}')">View Page</button>
+          <button onclick="editListing('${l.id}')">Edit</button>
+          <button class="del" onclick="deleteListing('${l.id}')">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('') + '</div>';
+}
+
+function escapeHtml(str){
+  return String(str || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function escapeAttr(str){ return escapeHtml(str); }
+
+function showFormError(msg){
+  const el = document.getElementById('form-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function clearFormError(){
+  document.getElementById('form-error').style.display = 'none';
+}
+
+function readForm(){
+  const data = {};
+  FIELD_IDS.forEach(id => { data[id] = document.getElementById('f-' + id).value.trim(); });
+  return data;
+}
+
+function fillForm(l){
+  FIELD_IDS.forEach(id => { document.getElementById('f-' + id).value = l[id] || ''; });
+}
+
+function clearForm(){
+  FIELD_IDS.forEach(id => { document.getElementById('f-' + id).value = ''; });
+  document.getElementById('f-tag').value = 'For Sale';
+  document.getElementById('f-type').value = 'Condominium';
+  document.getElementById('f-pets').value = 'Yes';
+  document.getElementById('f-hoafreq').value = 'Monthly';
+}
+
+document.getElementById('save-btn').addEventListener('click', async () => {
+  clearFormError();
+  const data = readForm();
+
+  if(!data.price || !data.address){
+    showFormError('Price and address are required.');
+    return;
+  }
+
+  let error;
+  if(editingId){
+    ({ error } = await sb.from('listings').update(data).eq('id', editingId));
+  } else {
+    ({ error } = await sb.from('listings').insert(data));
+  }
+  if(error){ showFormError('Could not save: ' + error.message); return; }
+
+  await loadListings();
+  clearForm();
+  exitEditMode();
+});
+
+function editListing(id){
+  const l = listings.find(x => x.id === id);
+  if(!l) return;
+  editingId = id;
+  fillForm(l);
+  document.getElementById('form-title').textContent = 'Edit Listing';
+  document.getElementById('save-btn').textContent = 'Update Listing';
+  document.getElementById('cancel-edit').style.display = 'flex';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function exitEditMode(){
+  editingId = null;
+  document.getElementById('form-title').textContent = 'Add a Listing';
+  document.getElementById('save-btn').textContent = 'Save Listing';
+  document.getElementById('cancel-edit').style.display = 'none';
+}
+
+document.getElementById('cancel-edit').addEventListener('click', () => {
+  clearForm();
+  exitEditMode();
+  clearFormError();
+});
+
+async function deleteListing(id){
+  if(!confirm('Remove this listing? This cannot be undone.')) return;
+  const { error } = await sb.from('listings').delete().eq('id', id);
+  if(error){ showFormError('Could not delete: ' + error.message); return; }
+  await loadListings();
+}
+
+function viewListing(id){
+  window.open('listing.html?id=' + encodeURIComponent(id), '_blank');
+}
+</script>
+</body>
+</html>
